@@ -401,21 +401,6 @@ public class ShiroConfig
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
     }
-    /**
-     * 凭证匹配器（由于我们的密码校验交给Shiro的SimpleAuthenticationInfo进行处理了）
-     * 基本用不到 因为我们自行做的验证
-     * shiro的本身登录验证并没使用 所有也不需加密
-     * 用户传啥就啥 我们又不是从那走的
-     * @return HashedCredentialsMatcher
-     */
-/*    @Bean
-    public HashedCredentialsMatcher hashedCredentialsMatcher() {
-        HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        // 使用 MD5 散列算法
-        hashedCredentialsMatcher.setHashAlgorithmName("md5");
-        // 散列次数
-        hashedCredentialsMatcher.setHashIterations(2);
-        return hashedCredentialsMatcher;
-    }*/
+   
 
 }
