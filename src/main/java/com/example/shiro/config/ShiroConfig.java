@@ -234,7 +234,7 @@ public class ShiroConfig
         enterpriseCacheSessionDAO.setActiveSessionsCacheName("shiro-activeSessionCache");
         //sessionId生成器
         enterpriseCacheSessionDAO.setSessionIdGenerator(sessionIdGenerator());
-        
+
         return enterpriseCacheSessionDAO;
     }
     /**
