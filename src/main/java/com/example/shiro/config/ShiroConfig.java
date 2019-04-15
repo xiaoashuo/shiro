@@ -7,6 +7,7 @@ import com.example.shiro.shiro.filter.CusShiroFilter;
 import com.example.shiro.shiro.realm.UserRealm;
 import com.example.shiro.shiro.service.impl.DynamicPermServiceImpl;
 import com.example.shiro.shiro.session.CusSessionFactory;
+import com.example.shiro.shiro.session.RedisSessionDao;
 import com.example.shiro.shiro.session.ShiroSessionListener;
 import com.example.shiro.utils.StringUtils;
 import org.apache.commons.io.IOUtils;
@@ -22,6 +23,7 @@ import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
 import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.session.mgt.eis.SessionIdGenerator;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 
@@ -62,8 +64,6 @@ public class ShiroConfig
     @Autowired
     private DynamicPermServiceImpl dynamicPermService;
 
-    @Autowired
-    RedisProperties redisProperties;
     // Session超时时间，单位为毫秒（默认30分钟）
     @Value("${shiro.session.expireTime}")
     private int expireTime;
@@ -149,27 +149,38 @@ public class ShiroConfig
         }
     }
 
-
-    /**
-     * 配置shiro redisManager，使用的是shiro-redis开源插件
-     */
-    public RedisManager redisManager() {
+  /*  @Bean
+    public RedisManager redisManager(){
         RedisManager redisManager = new RedisManager();
-
-    redisManager.setHost(redisProperties.getHost());
-        redisManager.setPort(redisProperties.getPort());
-        redisManager.setPassword(redisProperties.getPassword());
+        redisManager.setHost("127.0.0.1");
+        redisManager.setPort(6379);
+        //redisManager.setPassword("123456");
         return redisManager;
-    }
-
+    }*/
     /**
-     * cacheManager 缓存 redis 实现
+     * shiro缓存管理器;
+     * 需要添加到securityManager中
+     * @return
      */
+/*
     @Bean
-    public RedisCacheManager cacheManager() {
+    public RedisCacheManager cacheManager(){
         RedisCacheManager redisCacheManager = new RedisCacheManager();
         redisCacheManager.setRedisManager(redisManager());
+        //redis中针对不同用户缓存
+        redisCacheManager.setKeyPrefix("username");
+        //用户权限信息缓存时间
+     //   redisCacheManager.setExpire(200000);
         return redisCacheManager;
+    }
+*/
+
+
+
+
+    @Bean
+    public RedisSessionDao getRedisSessionDao(){
+        return new RedisSessionDao();
     }
 
 
@@ -288,6 +299,7 @@ public class ShiroConfig
         sessionManager.setSessionListeners(listeners);
         sessionManager.setSessionIdCookie(sessionIdCookie());
         sessionManager.setSessionDAO(sessionDAO());
+        //sessionManager.setSessionDAO(getRedisSessionDao());
         sessionManager.setCacheManager(getEhCacheManager());
         //设置自定义会话工厂
         sessionManager.setSessionFactory(sessionFactory());
@@ -320,7 +332,7 @@ public class ShiroConfig
         // 记住我
         securityManager.setRememberMeManager(rememberMeManager());
         // 注入缓存管理器;
-        securityManager.setCacheManager(getEhCacheManager());
+       securityManager.setCacheManager(getEhCacheManager());
         // session管理器
        securityManager.setSessionManager(sessionManager());
         return securityManager;
@@ -401,6 +413,16 @@ public class ShiroConfig
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
     }
-   
+    /**
+     * 配置Shiro生命周期处理器
+     * @return
+     */
+    @Bean(name = "lifecycleBeanPostProcessor")
+    public static LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
+        return new LifecycleBeanPostProcessor();
+    }
+
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.example.shiro.utils.manager.factory;
 
 import com.example.shiro.entity.OperLog;
+import com.example.shiro.service.IOperLogService;
 import com.example.shiro.utils.AddressUtils;
 import com.example.shiro.utils.spring.SpringUtils;
 import eu.bitwalker.useragentutils.UserAgent;
@@ -67,7 +68,7 @@ public class AsyncFactory
                 // 远程查询操作地点
                 operLog.setOperLocation(AddressUtils.getRealAddressByIP(operLog.getOperIp()));
                 System.out.println("-----"+operLog);
-                //SpringUtils.getBean(IOperLogService.class).insertOperlog(operLog);
+              //  SpringUtils.getBean(IOperLogService.class).insert(operLog);
             }
         };
     }

@@ -1,6 +1,8 @@
 package com.example.shiro.entity;
 
+import javax.persistence.*;
 import java.util.Date;
+
 
 public class OperLog {
     //日志主键
